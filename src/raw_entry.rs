@@ -76,9 +76,12 @@ impl<'a, K, V, H> RawEntryBuilderMut<'a, K, V, H> {
     pub fn from_key<Q: ?Sized>(self, k: &Q) -> RawEntryMut<'a, K, V, H>
     where
         K: Borrow<Q>,
-        Q: Eq,
+        Q: Eq + Hash,
+        H: Hasher + Default,
     {
-        self.from_key_hashed_nocheck(0, k)
+        let mut hasher = H::default();
+        k.hash(&mut hasher);
+        self.from_key_hashed_nocheck(hasher.finish(), k)
     }
 
     /// Creates a `RawEntryMut` from the given key and its hash.
@@ -128,8 +131,12 @@ impl<'a, K, V, H> RawEntryBuilder<'a, K, V, H> {
     where
         K: Borrow<Q>,
         Q: Eq,
+        Q: Eq + Hash,
+        H: Hasher + Default,
     {
-        self.from_key_hashed_nocheck(0, k)
+        let mut hasher = H::default();
+        k.hash(&mut hasher);
+        self.from_key_hashed_nocheck(hasher.finish(), k)
     }
 
     /// Access an entry by a key and its hash.

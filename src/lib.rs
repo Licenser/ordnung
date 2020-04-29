@@ -854,4 +854,19 @@ mod tests {
         assert_eq!(map.len(), 1);
         assert_eq!(map.is_empty(), false);
     }
+
+    #[test]
+    fn raw_entry() {
+        let mut map: Map<&str, u64> = Map::new();
+
+        {
+            let e = map.raw_entry_mut().from_key("foo").or_insert("foo", 42);
+
+            assert_eq!(*e.0, "foo");
+            assert_eq!(*e.1, 42);
+        }
+        assert_eq!(map.get("foo"), Some(&42));
+        assert_eq!(map.len(), 1);
+        assert_eq!(map.is_empty(), false);
+    }
 }
